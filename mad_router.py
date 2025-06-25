@@ -21,7 +21,6 @@ def redirect_all(src_iface: str, dst_iface: str):
 
 
 if __name__ == "__main__":
-	interfaces = scapy.get_working_ifaces()
 	scapy.show_interfaces()
 
 	src_iface = get_user_iface("Enter source interface index: ")
@@ -29,3 +28,4 @@ if __name__ == "__main__":
 	print(f"Redirecting from {src_iface} to {dst_iface}")
 
 	redirect_all(src_iface, dst_iface)
+
