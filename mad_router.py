@@ -1,31 +1,38 @@
 import scapy.all as scapy
-from functools import partial
+
+# TODO fix mac so that someone can send back to me
+# TODO fix to only forward layer 3 and above
 
 
-def get_user_iface(message: str) -> str:
-	interfaces = scapy.get_working_ifaces()
-	iface_idx = int(input(message))
-	if not 0 < iface_idx << len(interfaces):
-		print("[!] invalid interface")
-		exit()
-	return interfaces[iface_idx - 1].name
+def get_user_int(message: str) -> int:
+	"""Get an input from the user, with the givven message."""
+	num = input(message)
+	try:
+		return int(num)
+	except:
+		raise ValueError("not a valid number")
 
 
 def redirect_packet(packet, iface):
-	scapy.sendp(packet, iface=iface)
+	"""Redirect the given packet to the given interface, only if it has layer3 payload."""
+	if packet.haslayer(scapy.IP):
+		new_ether = scapy.Ether(src=iface.mac, dst="aa:aa:aa:aa:aa:aa")
+		scapy.sendp(new_ether / packet.payload, iface=iface.name)
 
 
 def redirect_all(src_iface: str, dst_iface: str):
-	packet_func = partial(redirect_packet, iface=dst_iface)
-	scapy.sniff(iface=src_iface, prn=packet_func)
+	"""Redirect all packets on src_iface to dst_iface."""
+	scapy.sniff(iface=src_iface.name, prn=lambda p: redirect_packet(p, dst_iface), count=3)
 
 
 if __name__ == "__main__":
 	scapy.show_interfaces()
 
-	src_iface = get_user_iface("Enter source interface index: ")
-	dst_iface = get_user_iface("Enter destination interface index: ")
-	print(f"Redirecting from {src_iface} to {dst_iface}")
+	src_iface_idx = get_user_int("Enter source interface index: ")
+	dst_iface_idx = get_user_int("Enter destination interface index: ")
+	src_iface = scapy.dev_from_index(src_iface_idx)
+	dst_iface = scapy.dev_from_index(dst_iface_idx)
+	print(f"Redirecting from {src_iface.name} to {dst_iface.name}")
 
 	redirect_all(src_iface, dst_iface)
 
