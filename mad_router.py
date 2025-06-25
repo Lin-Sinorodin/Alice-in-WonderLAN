@@ -1,4 +1,5 @@
 import scapy.all as scapy
+from functools import partial
 
 
 def get_user_iface(message: str) -> str:
@@ -10,6 +11,15 @@ def get_user_iface(message: str) -> str:
 	return interfaces[iface_idx - 1].name
 
 
+def redirect_packet(packet, iface):
+	scapy.sendp(packet, iface=iface)
+
+
+def redirect_all(src_iface: str, dst_iface: str):
+	packet_func = partial(redirect_packet, iface=dst_iface)
+	scapy.sniff(iface=src_iface, prn=packet_func)
+
+
 if __name__ == "__main__":
 	interfaces = scapy.get_working_ifaces()
 	scapy.show_interfaces()
@@ -18,7 +28,4 @@ if __name__ == "__main__":
 	dst_iface = get_user_iface("Enter destination interface index: ")
 	print(f"Redirecting from {src_iface} to {dst_iface}")
 
-	scapy.sniff(iface=src_iface, prn=lambda p: scapy.sendp(p, iface=dst_iface))
-
-
-
+	redirect_all(src_iface, dst_iface)
