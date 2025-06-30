@@ -1,8 +1,8 @@
-import random
 import scapy.all as scapy
 from utils import get_routing_interfaces, get_random_ip_in_subnet
 
 DUMMY_MAC = "aa:aa:aa:aa:aa:aa"
+
 
 class Router:
 	def __init__(self, src_iface: scapy.NetworkInterface, dst_iface: scapy.NetworkInterface):

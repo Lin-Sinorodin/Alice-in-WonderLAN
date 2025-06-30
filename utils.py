@@ -1,3 +1,4 @@
+import random
 import scapy.all as scapy
 from typing import Tuple
 
