@@ -1,11 +1,10 @@
 import scapy.all as scapy
 
-# TODO fix mac so that someone can send back to me
-# TODO fix to only forward layer 3 and above
+DUMMY_MAC = "aa:aa:aa:aa:aa:aa"
 
 
 def get_user_int(message: str) -> int:
-	"""Get an input from the user, with the givven message."""
+	"""Get an input from the user, with the given message."""
 	num = input(message)
 	try:
 		return int(num)
@@ -13,16 +12,16 @@ def get_user_int(message: str) -> int:
 		raise ValueError("not a valid number")
 
 
-def redirect_packet(packet, iface):
+def redirect_packet(packet: scapy.Ether, iface: scapy.NetworkInterface) -> None:
 	"""Redirect the given packet to the given interface, only if it has layer3 payload."""
 	if packet.haslayer(scapy.IP):
-		new_ether = scapy.Ether(src=iface.mac, dst="aa:aa:aa:aa:aa:aa")
+		new_ether = scapy.Ether(src=iface.mac, dst=DUMMY_MAC)
 		scapy.sendp(new_ether / packet.payload, iface=iface.name)
 
 
-def redirect_all(src_iface: str, dst_iface: str):
+def redirect_all(src_iface: str, dst_iface: str) -> None:
 	"""Redirect all packets on src_iface to dst_iface."""
-	scapy.sniff(iface=src_iface.name, prn=lambda p: redirect_packet(p, dst_iface), count=3)
+	scapy.sniff(iface=src_iface.name, prn=lambda p: redirect_packet(p, dst_iface))
 
 
 if __name__ == "__main__":
