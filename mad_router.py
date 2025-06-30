@@ -24,7 +24,7 @@ class Router:
 
 	def get_nat_port(self):
 		"""Get a random port that is not taken by the nat, to be used for a new nat table entry."""
-		taken_ports = self.nat_taken_ports()
+		taken_ports = self.nat_taken_ports
 		port = random.randint(NAT_MIN_PORT, NAT_MAX_PORT)
 		while port in taken_ports:
 			port = random.randint(NAT_MIN_PORT, NAT_MAX_PORT)
