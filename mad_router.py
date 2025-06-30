@@ -34,6 +34,8 @@ class Router:
 		"""Start redirectiong in both directions, with async sniffers."""
 		self.in_to_out_sniffer.start()
 		self.out_to_in_sniffer.start()
+		self.in_to_out_sniffer.join()
+		self.out_to_in_sniffer.join()
 
 	def stop(self):
 		"""Stop redirectiong in both directions."""
@@ -48,7 +50,7 @@ class Router:
 
 	def get_nat_port(self):
 		"""Get a random port that is not taken by the nat, to be used for a new nat table entry."""
-		taken_ports = self.nat_taken_ports()
+		taken_ports = self.nat_taken_ports
 		port = random.randint(NAT_MIN_PORT, NAT_MAX_PORT)
 		while port in taken_ports:
 			port = random.randint(NAT_MIN_PORT, NAT_MAX_PORT)
